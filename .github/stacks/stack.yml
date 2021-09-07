@@ -1,0 +1,80 @@
+version: 1.0
+
+name: nextjs-azure-appservice
+description: GH-stack for a nextjs app on azure appservice
+branding:
+  icon: 'azure.svg'
+  color: 'blue'
+ 
+inputs:
+  - name: NODE_VERSION
+    default: 'v12.22.4'
+    description: NODE_VERSION for nodejs stack
+    required: true
+    validvalues:
+    - 'v12.22.4'
+    - 'v14.17.4'
+
+  - name: NEXTJS_VERSION
+    default: 'v11.0.1'
+    description: NEXTJS_VERSION for nextjs stack
+    required: true
+    validvalues:
+    - v11.0.1
+    - v10.2.4
+    - v10.2.3
+    - v10.2.2
+    - v10.2.1
+
+  - name: NPM_PASSWORD
+    description: NPM_PASSWORD for dependabot workflow
+    required: true
+    is_secret: true
+
+  - name: reviewer-count
+    default: 2
+    description: Number of required reviewers for PR
+
+  - name: enable-security-alerts
+    default: 'true'
+    description: Enable Security Alerts
+
+  - name: enable-vulnerability-alerts
+    default: 'true'
+    description: Enable Vulnerability Alerts
+
+configs:
+  - repo-metadata:
+      parameters:
+        description: Created from 'nextjs-azure-appservice' stack
+        topics:
+        - 'nextjs'
+        - 'azure-appservice'
+
+  - branches:    
+    - name: dev*
+      parameters:
+        enforce-admins: false
+        dismiss-stale-reviews: true
+        require-code-owner-reviews: false
+        required-approving-review-count: 0
+        allow-force-pushes: true
+        allow-deletions: true
+
+  - environments: 
+    - name: development
+      parameters: 
+        protected-branches: true
+        custom-branch-policies: true
+        secrets:
+          - name: NPM_PASSWORD
+            value: {{inputs.NPM_PASSWORD}}
+
+  - security:
+      parameters: 
+        vulnerability-alerts: {{inputs.enable-vulnerability-alerts}}
+        automated-security-fixes: true
+
+
+init:
+- uses: ".github/workflows/stack-init.yaml"
